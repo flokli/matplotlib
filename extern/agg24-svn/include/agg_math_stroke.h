@@ -479,11 +479,16 @@ namespace agg
                 //-------------------
                 if(m_approx_scale * (m_width_abs - dbevel) < m_width_eps)
                 {
+                    // Bound the intersection by the miter limit, as calc_miter
+                    // does. Otherwise, a join of nearly-collinear segments can
+                    // be incorrectly calculated very far from its true point.
                     if(calc_intersection(v0.x + dx1, v0.y - dy1,
                                          v1.x + dx1, v1.y - dy1,
                                          v1.x + dx2, v1.y - dy2,
                                          v2.x + dx2, v2.y - dy2,
-                                         &dx, &dy))
+                                         &dx, &dy) &&
+                       (calc_distance(v1.x, v1.y, dx, dy) <=
+                           m_width_abs * m_miter_limit))
                     {
                         add_vertex(vc, dx, dy);
                     }
